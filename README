@@ -1,0 +1,22 @@
+Simulation and Graph-generation utilities
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This repository contains Perl modules and scripts developed as core or
+protocol-independent components of network protocol simulation and
+visualization tools, during 2006-2007.
+
+These files are not useful by themselves - actual simulation and
+visualization logic have to be built on top of features provided by
+these Perl codes, e.g. job scheduling, input parameter handling, and
+drawing abstract interfaces.
+
+* Author
+
+Wakaba <w@suika.fam.cx>.
+
+* License
+
+Copyright 2006-2007 Wakaba <w@suika.fam.cx>.
+
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
