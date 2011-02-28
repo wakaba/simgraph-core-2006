@@ -271,6 +271,8 @@ sub node_id ($;$) {
 
 1;
 
+__END__
+
 =back
 
 =head1 EXAMPLES

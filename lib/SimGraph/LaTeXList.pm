@@ -1,7 +1,6 @@
 =head1 NAME
 
-SimGraph::LaTeXList - ARCP Simulator - Support Module - LaTeX Graph List
-Generation
+SimGraph::LaTeXList - Simulation and Graph-generation utilities - LaTeX graph list generator
 
 =head1 SYNOPSIS
 
@@ -14,11 +13,9 @@ Generation
 
 =head1 DESCRIPTION
 
-The L<SimGraph> Perl module set provides facilities to execute
-ARCP simulator and to analyse its results.
-With the L<SimGraph::LaTeXList> module, Perl scripts can
-generate a LaTeX source file that contains a list of graphes
-extracted from various visualizing scripts.
+With the L<SimGraph::LaTeXList> module, Perl scripts can generate a
+LaTeX source file that contains a list of graphes extracted from
+various visualizing scripts.
 
 =head1 METHODS
 
@@ -290,12 +287,28 @@ sub make_pdf ($) {
 
 1;
 
+__END__
+
 =back
+
+=head1 EXAMPLE
+
+  require SimGraph::LaTeXList;
+  my $tex = SimGraph::LaTeXList->new;
+  $tex->file_name_stem ($plot_file_name_stem);
+  $tex->add_tex_section ($TEX_TITLE);
+  $tex->add_tex_image (file_name => $plot->file_name, scale => q[\myscale]);
+  $tex->make_pdf;
 
 =head1 AUTHOR
 
-Wakaba <m-wakaba@ist.osaka-u.ac.jp>
+Wakaba <w@suika.fam.cx>.
+
+=head1 LICENSE
+
+Copyright 2006-2007 Wakaba <w@suika.fam.cx>.
+
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut
-
-# LaTeXList.pm ends here

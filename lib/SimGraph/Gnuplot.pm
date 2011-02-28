@@ -1,13 +1,11 @@
 =head1 NAME
 
-SimGraph::Gnuplot - ARCP Simulator - Support Module - Gnuplot Graph Generator
+SimGraph::Gnuplot - Simulation and Graph-generation utilities - Gnuplot graph generator
 
 =head1 DESCRIPTION
 
-The C<SimGraph> Perl module set provides various tools to analysis
-result files of the ARCP simulator.  The C<SimGraph::Gnuplot> module
-provides an object-oriented interface to create a 2-D or 3-D graph using
-C<gnuplot>(1).
+The C<SimGraph::Gnuplot> module provides an object-oriented interface
+to create a 2-D or 3-D graph using C<gnuplot>(1).
 
 =head1 SYNOPSIS
 
@@ -223,76 +221,12 @@ sub stringify_axes ($) {
       $r .= "set ${axis}label 'time [s]'\n";
       my $time_end_s = $self->time_end_s;
       $r .= "set ${axis}range [0:$time_end_s]\n" if $time_end_s > 0;
-    } elsif ($axis_type eq 'ant-sending-rate') {
-      $r .= "set ${axis}label 'ant sending rate [/s]'\n";
+    } elsif ($axis_type eq 'my-x-axis') {
+      $r .= "set ${axis}label 'my x-axis [/s]'\n";
       $r .= "set ${axis}range [0.1:1000]\n";
       $r .= "set logscale ${axis}\n";
-    } elsif ($axis_type eq 'ant-reception-rate') {
-      $r .= "set ${axis}label 'ant reception rate [/s]'\n";
-      $r .= "set ${axis}range [0:5]\n"; ## ISSUE: OK?
-    } elsif ($axis_type eq 'sensor-data-reception-rate') {
-      $r .= "set ${axis}label 'sensor data reception rate [/s]'\n";
-      my $max_rate = $self->sensor_data_generation_rate * 1.5;
-      $r .= "set ${axis}range [0:$max_rate]\n";
-    } elsif ($axis_type eq 'sensor-data-reception-rate-average') {
-      $r .= "set ${axis}label 'average sensor data reception rate [/s]'\n";
-      $r .= "set ${axis}range [0:1.5]\n";
-    } elsif ($axis_type eq 'sensor-data-reception-rate-variance') {
-      $r .= "set ${axis}label 'variance of sensor data reception rate'\n";
-      $r .= "set ${axis}range [0:0.2]\n";
-    } elsif ($axis_type eq 'ant-number') {
-      $r .= "set ${axis}label 'number of ants'\n";
-      #$r .= "set ${axis}range [0:20]\n";
-      $r .= "set ${axis}range [0.8:100000]\n";
-      $r .= "set logscale ${axis}\n";
-    } elsif ($axis_type eq 'rp-ant-percentage') {
-      #$r .= "set ${axis}label 'data gathering ants arrived at an RP [%]'\n";
-      $r .= "set ${axis}range [0:100]\n";
-    } elsif ($axis_type eq 'test-number-for-average') {
-      #$r .= "set ${axis}label 'number'\n";
-      $r .= "set ${axis}range [0:20]\n";
-    } elsif ($axis_type eq 'test-number-for-variance') {
-      #$r .= "set ${axis}label 'number'\n";
-      $r .= "set ${axis}range [0:6]\n";
-    } elsif ($axis_type eq 'rp-number') {
-      $r .= "set ${axis}label 'number of RPs'\n";
-      $r .= "set ${axis}range [0:10]\n";
-      $r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'visit-number') {
-      $r .= "set ${axis}range [0:10]\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'test-number-for-visit-number-mean') {
-      $r .= "set ${axis}range [0:20]\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'visit-number-all') {
-      $r .= "set ${axis}range [0:10]\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'test-number-for-visit-number-mean-all') {
-      $r .= "set ${axis}range [0:]\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'rp-moved-number') {
-      $r .= "set ${axis}range [0:10]\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'test-number-for-rp-moved-number') {
-      $r .= "set ${axis}range [0:]\n";
-      #$r .= "set ${axis}tics 1\n";
     } elsif ($axis_type eq 'real') {
       #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'route-length') {
-      $r .= "set ${axis}range [-1:@{[$self->ant_ttl * 2 + 3]}]\n";
-      $r .= "set ${axis}label 'length [hop]'\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'pheromone-value') {
-      $r .= "set ${axis}range [0.1:100000]\n";
-      $r .= "set logscale ${axis}\n";
-      $r .= "set ${axis}label 'pheromone'\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'forwarding-probability') {
-      $r .= "set ${axis}range [0:1]\n";
-      $r .= "set ${axis}label 'forwarding probability'\n";
-      #$r .= "set ${axis}tics 1\n";
-    } elsif ($axis_type eq 'node-id') {
-      $r .= "set ${axis}label 'node identifier'\n";
     } else {
       die "$0: $axis = $axis_type: Unsupported axis type";
     }
@@ -325,18 +259,6 @@ sub time_end_ms ($;$) {
   $self->{time_end} = shift if @_;
   (defined $self->{time_end} ? $self->{time_end} : 0);
 } # time_end_ms
-
-=item [I<$rate> =] I<$g>->sensor_data_generation_rate ([I<$new_rate>]);
-
-Get and/or set the sensor data generation rate.
-
-=cut
-
-sub sensor_data_generation_rate ($;$) {
-  my $self = shift;
-  $self->{sensor_data_generation_rate} = shift if @_;
-  return (defined $self->{sensor_data_generation_rate} ? $self->{sensor_data_generation_rate} : 1);
-} # sensor_data_generation_rate
 
 =item [I<$with_keys> =] I<$g>->with_keys [I<$new_with_keys>];
 
@@ -637,12 +559,46 @@ sub _stringify_set ($) {
   return $r;
 } # _stringify_set
 
+1;
+
+__END__
+
 =back
+
+=head1 EXAMPLE
+
+  require SimGraph::Gnuplot;
+  my $plot = SimGraph::Gnuplot->new;
+  $plot->terminal ($self->{param}->output_format);
+  $plot->x_axis ('time');
+  $plot->time_end_ms ($self->{param}->simulation_time_end);
+  $plot->y_axis ('my-y-axis-type');
+  $plot->file_name_stem ($file_name_stem);
+  my $line1 = $plot->add_linestyle (type => 1, width => 3);
+  my $line2 = $plot->add_linestyle (type => 2, width => 3);
+  $plot->add_data (file_name => $data_file_name, index => 0,
+      with => 'steps', using => q[($1 / 1000):(1000 / $2)],
+      linestyle => $line1, title => 'value 1');
+  $plot->add_data (file_name => $data_file_name, index => 1,
+      with => 'steps', using => q[($1 / 1000):(1000 / $2)],
+      linestyle => $line2, title => 'value 2');
+  $plot->plot;
+
+=head1 SEE ALSO
+
+The L<SimGraph::Canvas::Gnuplot> module provides more abstract
+interface, which would be more useful for most cases than using this
+module directly.
 
 =head1 AUTHOR
 
-Wakaba <m-wakaba@ist.osaka-u.ac.jp>
+Wakaba <w@suika.fam.cx>.
+
+=head1 LICENSE
+
+Copyright 2006-2007 Wakaba <w@suika.fam.cx>.
+
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut
-
-1;
