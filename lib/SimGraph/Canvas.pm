@@ -1,6 +1,6 @@
 =head1 NAME
 
-SimGraph::Canvas - ARCP Simulator - Support Module - Canvas
+SimGraph::Canvas - Simulation and Graph-generation utilities - Canvas base class
 
 =head1 SYNOPSIS
 
@@ -11,14 +11,12 @@ SimGraph::Canvas - ARCP Simulator - Support Module - Canvas
 
 =head1 DESCRIPTION
 
-The C<SimGraph> Perl module set provides various tools to analysis
-result files of the ARCP simulator.  The C<SimGraph::Canvas> module
-provides an abstract interface to create vector images.
+The C<SimGraph::Canvas> module provides an abstract interface to
+create vector images.
 
 It is I<not> intended for this module to be used by scripts directly;
-C<SimGraph::Canvas::Gnuplot>, for example, inherits this
-module and implements drawing of vector images using
-C<gnuplot> (1).
+C<SimGraph::Canvas::Gnuplot>, for example, inherits this module and
+implements drawing of vector images using C<gnuplot> (1).
 
 =head1 METHODS
 
@@ -275,14 +273,80 @@ sub node_id ($;$) {
 
 =back
 
+=head1 EXAMPLES
+
+=head2 Example 1 - Draw on gnuplot canvas
+
+  require SimGraph::Canvas::Gnuplot;
+  my $canvas = SimGraph::Canvas::Gnuplot->new;
+  $canvas->file_name_stem ($OUTPUT_FILE_NAME_STEM);
+  $canvas->gnuplot_terminal ($OUTPUT);
+  $canvas->gnuplot_ticslevel (0);
+  $canvas->gnuplot_add_set (xtics => 1);
+  $canvas->gnuplot_add_set (ytics => 1);
+  
+  my $ss_line_style = $canvas->add_linestyle (type => 3, width => 1);
+  my @line_style;
+  $line_style[$_] = $canvas->add_linestyle
+      (type => [10, 8, 4, 2]->[$_], width => 1) for 0..3;
+  
+  for my $i (0..$#point-1) {
+    $canvas->add_line ($point[$i] => $point[$i+1],
+                       style => $line_style[$delta]);
+  }
+  
+  $canvas->add_text ($text, [$x/2 + 0.1, $y/2 + 0.1]);
+  
+  $canvas->add_circle ([$v, 0, 0], 5, style => $ss_line_style);
+  $canvas->add_pointing_label ($coord => ['screen 0.82', 'screen 0.77'],
+                               $v, linestyle => $sink_line_style);
+  
+  $canvas->draw;
+
+=head2 Example 2 - Enumerate objects and set properties
+
+  my $canvas = SimGraph::Canvas::SVG->new;
+  
+  ...
+  
+  $canvas->for_each_object (sub {
+    my $obj = shift;
+    my $color = ...;
+    my $ls = $canvas->add_linestyle
+        (inherit => $obj->linestyle, color => $color);
+    $obj->linestyle ($ls);
+    $obj->title ($obj->node_id . ': ' . $prob);
+  }, class => 'node');
+  
+  warn "Writing $file_name_stem.svg...\n";
+  $canvas->file_name_stem ($file_name_stem);
+  $canvas->draw;
+
+=head2 Example 3 - Generate a bitmap image
+
+  require SimGraph::Canvas::XBM;
+  
+  my $xbm = SimGraph::Canvas::XBM->new;
+  $xbm->file_name_stem ($OUTPUT_FILE_NAME_STEM);
+  
+  $xbm->set_dot ([$x => $y] => $v);
+  
+  $xbm->draw;
+
 =head1 SEE ALSO
 
-L<SimGraph::Canvas::Gnuplot>
+L<SimGraph::Canvas::Gnuplot>, L<SimGraph::Canvas::SVG>,
+L<SimGraph::Canvas::XBM>.
 
 =head1 AUTHOR
 
-Wakaba <m-wakaba@ist.osaka-u.ac.jp>
+Wakaba <w@suika.fam.cx>.
+
+=head1 LICENSE
+
+Copyright 2006-2007 Wakaba <w@suika.fam.cx>.
+
+This program is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut
-
-# Canvas.pm ends here
